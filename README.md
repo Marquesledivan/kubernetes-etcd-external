@@ -506,7 +506,7 @@ to
 "--initial-cluster-state existing"
 ```
 
-<center><img src="images/systemd.png.png" width="4000" /></center>
+<center><img src="images/systemd.png" width="4000" /></center>
 
 Access the node that has a problem
 
