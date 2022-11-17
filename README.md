@@ -15,7 +15,7 @@ We also need an IP range for the pods. This range will be 10.30.0.0/16, but it i
 
 We also need three Kubernetes main nodes. These machine will have the IP 172.31.25.5.
 
-# Configuration on ETCD nodes
+Configuration on ETCD nodes
 
 ```bash
 host: 172.31.31.161
@@ -56,7 +56,8 @@ sudo mv cfssl cfssljson /usr/local/bin/
 mkdir -p /etc/kubernetes/pki/etcd
 cd /etc/kubernetes/pki/etcd
 ```
-# Create ca-config.json file in /etc/kubernetes/pki/etcd folder with following content.
+
+Create ca-config.json file in /etc/kubernetes/pki/etcd folder with following content.
 
 ```json
 {
@@ -95,7 +96,7 @@ cd /etc/kubernetes/pki/etcd
     }
 }
 ```
-# Create ca-csr.json file in /etc/kubernetes/pki/etcd folder with following content.
+Create ca-csr.json file in /etc/kubernetes/pki/etcd folder with following content.
 
 ```json
 {
@@ -107,7 +108,7 @@ cd /etc/kubernetes/pki/etcd
 }
 ```
 
-# Create client.json file in /etc/kubernetes/pki/etcd folder with following content.
+Create client.json file in /etc/kubernetes/pki/etcd folder with following content.
 
 ```json
 {
@@ -124,7 +125,7 @@ cfssl gencert -initca ca-csr.json | cfssljson -bare ca -
 cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=client client.json | cfssljson -bare client
 ```
 
-# Create a directory  /etc/kubernetes/pki/etcd on master-1 and master-2 and copy all the generated certificates into it.
+Create a directory  /etc/kubernetes/pki/etcd on master-1 and master-2 and copy all the generated certificates into it.
 
 ```bash
 MASTER-1=172.31.17.200 
@@ -142,7 +143,7 @@ mv /tmp/etcd/* /etc/kubernetes/pki/etcd/*
 
 ```
 
-# On all masters, now generate peer and etcd certs in /etc/kubernetes/pki/etcd. To generate them, we need the previous CA certificates on all masters.
+On all masters, now generate peer and etcd certs in /etc/kubernetes/pki/etcd. To generate them, we need the previous CA certificates on all masters.
 
 ```bash
 export PEER_NAME=$(hostname)
@@ -157,7 +158,7 @@ cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=serv
 cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=peer config.json | cfssljson -bare peer
 ```
 
-# On all masters, Install etcd and set it’s environment file.
+On all masters, Install etcd and set it’s environment file.
 
 ```bash
 ETCD_VER=v3.4.22
@@ -181,7 +182,7 @@ echo "PEER_NAME=$PEER_NAME" >> /etc/etcd.env
 echo "PRIVATE_IP=$PRIVATE_IP" >> /etc/etcd.env
 ```
 
-# Now, we will create a 3 node etcd cluster on all 3 master nodes. Starting etcd service on all three nodes as systemd. Create a file /etc/systemd/system/etcd.service on all masters.
+Now, we will create a 3 node etcd cluster on all 3 master nodes. Starting etcd service on all three nodes as systemd. Create a file /etc/systemd/system/etcd.service on all masters.
 
 ```systemd
 172.31.31.161 etcd1.ledivan.local
@@ -248,7 +249,8 @@ WantedBy=multi-user.target
 
 ```
 
-# Start the etcd service on all three master nodes and check the etcd cluster health:
+Start the etcd service on all three master nodes and check the etcd cluster health:
+
 ```bash
 systemctl daemon-reload
 systemctl enable etcd --now
@@ -256,7 +258,7 @@ systemctl enable etcd --now
 ETCDCTL_API=3 etcdctl member list --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.pem --cert=/etc/kubernetes/pki/etcd/server.pem --key=/etc/kubernetes/pki/etcd/server-key.pem
 ```
 
-<center><img src="images/etcdctl-list" width="4000" /></center>
+<center><img src="images/etcdctl-list.png" width="4000" /></center>
 
 # Setup load balancer
 
@@ -266,7 +268,7 @@ There are multiple cloud provider solutions for load balancing like AWS elastic 
 apt install keepalived -y
 ```
 
-# Create the following configuration file /etc/keepalived/keepalived.conf on all master nodes:
+Create the following configuration file /etc/keepalived/keepalived.conf on all master nodes:
 
 ```bash
 global_defs {
@@ -303,7 +305,7 @@ vrrp_instance VI_1 {
 * Priority should be higher for master node e.g 101 and lower for others e.g 4000
 * Virtual_ip should contain the virtual ip of master nodes
 
-## Install the following health check script to /etc/keepalived/check_apiserver.sh on all master nodes:
+Install the following health check script to /etc/keepalived/check_apiserver.sh on all master nodes:
 
 ```bash
 #!/bin/sh
@@ -471,7 +473,7 @@ ip-172-31-20-90   Ready    <none>          133m   v1.25.4
 ip-172-31-25-5    Ready    control-plane   174m   v1.25.4
 ```
 
-### Troubleshooting Alert: Component etcd is unhealthy in Kubernetes
+Troubleshooting Alert: Component etcd is unhealthy in Kubernetes
 
 <center><img src="images/status_etcd.png" width="4000" /></center>
 
