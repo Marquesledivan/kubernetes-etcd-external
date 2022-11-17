@@ -34,7 +34,7 @@ reboot
 
 Configure /etc/hosts
 
-<center><img src="images/etc.png" width="100" /></center>
+<center><img src="images/etc.png" width="4000" /></center>
 
 ```bash
 vim  /etc/hosts
@@ -196,7 +196,7 @@ EnvironmentFile=/etc/etcd.env
 Type=notify
 Restart=always
 RestartSec=5s
-LimitNOFILE=10000
+LimitNOFILE=400000
 TimeoutStartSec=0
 
 ExecStart=/bin/etcd --name master-0  --data-dir /var/lib/etcd --listen-client-urls https://172.31.31.161:2379,https://127.0.0.1:2379 --advertise-client-urls https://172.31.31.161:2379 --listen-peer-urls https://172.31.31.161:2380 --initial-advertise-peer-urls https://172.31.31.161:2380 --cert-file=/etc/kubernetes/pki/etcd/server.pem --key-file=/etc/kubernetes/pki/etcd/server-key.pem --trusted-ca-file=/etc/kubernetes/pki/etcd/ca.pem --peer-cert-file=/etc/kubernetes/pki/etcd/peer.pem --peer-key-file=/etc/kubernetes/pki/etcd/peer-key.pem --peer-trusted-ca-file=/etc/kubernetes/pki/etcd/ca.pem --initial-cluster master-0=https://etcd1.ledivan.local:2380,master-1=https://etcd2.ledivan.local:2380,master-2=https://etcd3.ledivan.local:2380 --initial-cluster-token my-etcd-token --initial-cluster-state new --client-cert-auth=false --peer-client-cert-auth=false
@@ -216,7 +216,7 @@ EnvironmentFile=/etc/etcd.env
 Type=notify
 Restart=always
 RestartSec=5s
-LimitNOFILE=10000
+LimitNOFILE=400000
 TimeoutStartSec=0
 
 ExecStart=/bin/etcd --name master-1  --data-dir /var/lib/etcd --listen-client-urls https://172.31.17.200:2379,https://127.0.0.1:2379 --advertise-client-urls https://172.31.17.200:2379 --listen-peer-urls https://172.31.17.200:2380 --initial-advertise-peer-urls https://172.31.17.200:2380 --cert-file=/etc/kubernetes/pki/etcd/server.pem --key-file=/etc/kubernetes/pki/etcd/server-key.pem --trusted-ca-file=/etc/kubernetes/pki/etcd/ca.pem --peer-cert-file=/etc/kubernetes/pki/etcd/peer.pem --peer-key-file=/etc/kubernetes/pki/etcd/peer-key.pem --peer-trusted-ca-file=/etc/kubernetes/pki/etcd/ca.pem --initial-cluster master-0=https://etcd1.ledivan.local:2380,master-1=https://etcd2.ledivan.local:2380,master-2=https://etcd3.ledivan.local:2380 --initial-cluster-token my-etcd-token --initial-cluster-state new --client-cert-auth=false --peer-client-cert-auth=false
@@ -237,7 +237,7 @@ EnvironmentFile=/etc/etcd.env
 Type=notify
 Restart=always
 RestartSec=5s
-LimitNOFILE=10000
+LimitNOFILE=4000
 TimeoutStartSec=0
 
 ExecStart=/bin/etcd --name master-2  --data-dir /var/lib/etcd --listen-client-urls https://172.31.19.142:2379,https://127.0.0.1:2379 --advertise-client-urls https://172.31.19.142:2379 --listen-peer-urls https://172.31.19.142:2380 --initial-advertise-peer-urls https://172.31.19.142:2380 --cert-file=/etc/kubernetes/pki/etcd/server.pem --key-file=/etc/kubernetes/pki/etcd/server-key.pem --trusted-ca-file=/etc/kubernetes/pki/etcd/ca.pem --peer-cert-file=/etc/kubernetes/pki/etcd/peer.pem --peer-key-file=/etc/kubernetes/pki/etcd/peer-key.pem --peer-trusted-ca-file=/etc/kubernetes/pki/etcd/ca.pem --initial-cluster master-0=https://etcd1.ledivan.local:2380,master-1=https://etcd2.ledivan.local:2380,master-2=https://etcd3.ledivan.local:2380 --initial-cluster-token my-etcd-token --initial-cluster-state new --client-cert-auth=false --peer-client-cert-auth=false
@@ -256,7 +256,7 @@ systemctl enable etcd --now
 ETCDCTL_API=3 etcdctl member list --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.pem --cert=/etc/kubernetes/pki/etcd/server.pem --key=/etc/kubernetes/pki/etcd/server-key.pem
 ```
 
-<center><img src="images/etcdctl-list" width="100" /></center>
+<center><img src="images/etcdctl-list" width="4000" /></center>
 
 # Setup load balancer
 
@@ -300,7 +300,7 @@ vrrp_instance VI_1 {
 ```
 * state is either MASTER (on the first master nodes) or BACKUP (the other master nodes).
 * Interface is generally the primary interface, in my case it is eth0
-* Priority should be higher for master node e.g 101 and lower for others e.g 100
+* Priority should be higher for master node e.g 101 and lower for others e.g 4000
 * Virtual_ip should contain the virtual ip of master nodes
 
 ## Install the following health check script to /etc/keepalived/check_apiserver.sh on all master nodes:
@@ -473,7 +473,7 @@ ip-172-31-25-5    Ready    control-plane   174m   v1.25.4
 
 ### Troubleshooting Alert: Component etcd is unhealthy in Kubernetes
 
-<center><img src="images/status_etcd.png" width="100" /></center>
+<center><img src="images/status_etcd.png" width="4000" /></center>
 
 ```bash
 etcdctl member remove 3de9ee6e17ed8c38 --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.pem --cert=/etc/kubernetes/pki/etcd/server.pem --key=/etc/kubernetes/pki/etcd/server-key.pem
@@ -506,7 +506,7 @@ to
 "--initial-cluster-state existing"
 ```
 
-<center><img src="images/systemd.png.png" width="100" /></center>
+<center><img src="images/systemd.png.png" width="4000" /></center>
 
 Access the node that has a problem
 
@@ -517,13 +517,13 @@ ETCDCTL_API=3 etcdctl endpoint health --endpoints=https://127.0.0.1:2379 --cacer
 ETCDCTL_API=3 etcdctl member list --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.pem --cert=/etc/kubernetes/pki/etcd/server.pem --key=/etc/kubernetes/pki/etcd/server-key.pe
 ```
 
-<center><img src="images/status_etcd_list.png" width="100" /></center>
+<center><img src="images/status_etcd_list.png" width="4000" /></center>
 
-<center><img src="images/status_etcd_restore.png" width="100" /></center>
+<center><img src="images/status_etcd_restore.png" width="4000" /></center>
 
 # Then you finished the test and didn't lose your ETCD.
 
-<center><img src="images/kubectl.png" width="100" /></center>
+<center><img src="images/kubectl.png" width="4000" /></center>
 
 ## Conclusion
 High availability is an important part of reliability engineering, focused on making system reliable and avoid any single point of failure of the complete system. At first glance, its implementation might seem quite complex, but high availability brings tremendous advantages to the system that requires increased stability and reliability. Using highly available cluster is one of the most important aspects of building a solid infrastructure.
